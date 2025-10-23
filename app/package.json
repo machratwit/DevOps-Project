@@ -1,0 +1,12 @@
+{
+  "name": "devops-sample",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node -e \"console.log('no tests yet'); process.exit(0)\""
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
