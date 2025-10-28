@@ -1,2 +1,9 @@
 .env
 node_modules
+.aws/
+*.tfstate
+*.tfstate.backup
+.terraform/
+crash.log
+*.tfvars
+*.tfvars.json

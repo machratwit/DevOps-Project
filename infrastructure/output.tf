@@ -1,0 +1,19 @@
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.app_server.public_ip
+}
+
+output "instance_public_dns" {
+  description = "Public DNS name of the EC2 instance"
+  value       = aws_instance.app_server.public_dns
+}
+
+output "ecr_repository_url" {
+  description = "URL of the ECR repository to push Docker images"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "security_group_id" {
+  description = "ID of the security group used by the instance"
+  value       = aws_security_group.ec2_sg.id
+}
