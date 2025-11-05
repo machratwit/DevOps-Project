@@ -17,4 +17,5 @@ variable "ami" {
 variable "key_name" { 
     description = "EC2 key pair name for SSH" 
     type = string
+    default = "devops-key"
 }

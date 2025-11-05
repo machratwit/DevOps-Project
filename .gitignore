@@ -1,7 +1,7 @@
 .env
 node_modules
 .aws/
-*.tfstate
+*.tfstate*
 *.tfstate.backup
 .terraform/
 crash.log
