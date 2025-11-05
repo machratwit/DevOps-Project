@@ -1,0 +1,31 @@
+name: Terraform Apply
+on: workflow_dispatch
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::630413101908:role/github-actions-oidc-role
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Plan
+        run: terraform plan
+      - name: Terraform Apply
+        uses: terraform apply -auto-approve
+      - name: Get Terraform outputs
+        id: tf_output
+        run: |
+          echo "EC2_HOST=$(infrastructure -chdir=terraform output -raw instance_public_ip)" >> $GITHUB_ENV
+          echo "EC2_DNS=$(infrastructure -chdir=terraform output -raw instance_public_dns)" >> $GITHUB_ENV
