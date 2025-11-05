@@ -1,0 +1,81 @@
+name: CI CD Pipeline
+
+on:
+  workflow_dispatch
+  # push:
+  #   branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Run tests
+        working-directory: app
+        run: npm test
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::630413101908:role/github-actions-oidc-role
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          REPO=${{ secrets.ECR_REPOSITORY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build Docker image
+        working-directory: app
+        run: |
+          IMAGE_NAME=${{ secrets.ECR_REPOSITORY }}
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          TAG=latest
+          docker build -t ${IMAGE_NAME}:${TAG} .
+          docker tag ${IMAGE_NAME}:${TAG} ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${IMAGE_NAME}:${TAG}
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.33.1
+
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Push image to ECR
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          docker push ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+            REGION=${{ secrets.AWS_REGION }}
+            IMAGE=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+            # login to ecr from EC2, then pull
+            aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+            docker pull ${IMAGE}
+            # stop existing container if exists, run new container
+            docker rm -f devops-sample || true
+            docker run -d --name devops-sample -p 3000:3000 ${IMAGE}
