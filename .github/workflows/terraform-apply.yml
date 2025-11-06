@@ -19,12 +19,16 @@ jobs:
         with:
           terraform_version: 1.5.7
       - name: Terraform Init
+        working-directory: infrastructure
         run: terraform init
       - name: Terraform Plan
+        working-directory: infrastructure
         run: terraform plan
       - name: Terraform Apply
+        working-directory: infrastructure
         run: terraform apply -auto-approve
       - name: Get Terraform outputs
+        working-directory: infrastructure
         id: tf_output
         run: |
           echo "EC2_HOST=$(infrastructure -chdir=terraform output -raw instance_public_ip)" >> $GITHUB_ENV
