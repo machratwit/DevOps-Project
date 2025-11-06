@@ -88,15 +88,3 @@ resource "aws_instance" "app_server" {
     Name = "devops-sample-app"
   }
 }
-
-# Elastic IP
-data "aws_eip" "existing_eip" {
-  id = "eipalloc-028546ca21d11e85a"
-}
-
-resource "aws_eip_association" "app_eip_assoc" {
-  instance_id   = aws_instance.app_server.id
-  allocation_id = data.aws_eip.existing_eip.id
-}
-
-allocation_id = data.aws_eip.existing_eip.id
