@@ -23,7 +23,7 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
       - name: Terraform Apply
-        uses: terraform apply -auto-approve
+        run: terraform apply -auto-approve
       - name: Get Terraform outputs
         id: tf_output
         run: |
