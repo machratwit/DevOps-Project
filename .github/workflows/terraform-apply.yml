@@ -27,8 +27,8 @@ jobs:
       - name: Terraform Apply
         working-directory: infrastructure
         run: terraform apply -auto-approve
-      - name: Get Terraform outputs
+      - name: Set Terraform outputs
         id: tf_output
         run: |
-          echo "EC2_HOST=$(terraform -chdir=infrastructure output -raw instance_public_ip)" >> $GITHUB_ENV
-          echo "EC2_DNS=$(terraform -chdir=infrastructure output -raw instance_public_dns)" >> $GITHUB_ENV
+          echo "EC2_HOST=$(terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n')" >> $GITHUB_ENV
+          echo "EC2_DNS=$(terraform -chdir=infrastructure output -raw instance_public_dns | tr -d '\n')" >> $GITHUB_ENV
