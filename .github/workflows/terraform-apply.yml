@@ -31,5 +31,5 @@ jobs:
         working-directory: infrastructure
         id: tf_output
         run: |
-          echo "EC2_HOST=$(infrastructure -chdir=terraform output -raw instance_public_ip)" >> $GITHUB_ENV
-          echo "EC2_DNS=$(infrastructure -chdir=terraform output -raw instance_public_dns)" >> $GITHUB_ENV
+          echo "EC2_HOST=$(terraform -chdir=infrastructure output -raw instance_public_ip)" >> $GITHUB_ENV
+          echo "EC2_DNS=$(terraform -chdir=infrastructure output -raw instance_public_dns)" >> $GITHUB_ENV
