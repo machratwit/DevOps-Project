@@ -62,15 +62,6 @@ jobs:
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           docker push ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Download EC2 host artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ec2_host
-          path: .
-
-      - name: Set EC2_HOST environment variable
-        run: echo "EC2_HOST=$(cat ec2_host.txt)" >> $GITHUB_ENV
-
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
