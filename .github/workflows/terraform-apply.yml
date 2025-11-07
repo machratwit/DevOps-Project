@@ -27,12 +27,18 @@ jobs:
       - name: Terraform Apply
         working-directory: infrastructure
         run: terraform apply -auto-approve
-      - name: Set Terraform outputs
-        id: tf_output
+      - name: Update EC2_HOST repository variable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n' > ec2_host.txt
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ec2_host
-          path: ec2_host.txt
+          EC2_IP=$(terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n')
+          echo "Updating repository variable EC2_HOST=$EC2_IP"
+          gh api \
+            -X PATCH \
+            repos/${{ github.repository }}/actions/variables/EC2_HOST \
+            -f value="$EC2_IP" || \
+          gh api \
+            -X POST \
+            repos/${{ github.repository }}/actions/variables \
+            -f name="EC2_HOST" \
+            -f value="$EC2_IP"
