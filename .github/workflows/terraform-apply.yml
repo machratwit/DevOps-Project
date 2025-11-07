@@ -32,7 +32,7 @@ jobs:
         run: |
           terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n' > ec2_ip.txt
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: ec2-ip
           path: ec2_ip.txt
