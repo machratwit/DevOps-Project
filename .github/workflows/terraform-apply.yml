@@ -30,5 +30,9 @@ jobs:
       - name: Set Terraform outputs
         id: tf_output
         run: |
-          echo "EC2_HOST=$(terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n')" >> $GITHUB_ENV
-          echo "EC2_DNS=$(terraform -chdir=infrastructure output -raw instance_public_dns | tr -d '\n')" >> $GITHUB_ENV
+          terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n' > ec2_host.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ec2_host
+          path: ec2_host.txt
