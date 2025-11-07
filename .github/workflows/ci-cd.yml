@@ -50,12 +50,12 @@ jobs:
           TAG=latest
           docker build -t ${IMAGE_NAME}:${TAG} .
           docker tag ${IMAGE_NAME}:${TAG} ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${IMAGE_NAME}:${TAG}
+          echo "IMAGE_NAME=${IMAGE_NAME}:${TAG}" >> $GITHUB_ENV
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.33.1
-
         with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+          image-ref: ${{ env.IMAGE_NAME }}
 
       - name: Push image to ECR
         run: |
