@@ -12,6 +12,8 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,14 +64,28 @@ jobs:
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           docker push ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Debug EC2 IP
+      - name: Install GitHub CLI
+        run: sudo apt update && sudo apt install gh -y
+
+      - name: Get latest terraform-apply run ID
+        id: get_run
         run: |
-          echo "EC2 host IP: ${{ needs.terraform-apply.outputs.instance_ip }}"
+          RUN_ID=$(gh run list --workflow terraform-apply.yml --branch main --limit 1 --json databaseId --jq '.[0].databaseId')
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+
+      - name: Download EC2 IP artifact
+        run: |
+          gh run download $RUN_ID --name ec2-ip --dir ./artifacts
+
+      - name: Read EC2 IP
+        run: |
+          EC2_IP=$(cat ./artifacts/ec2_ip.txt)
+          echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ needs.terraform-apply.outputs.instance_ip }}
+          host: ${{ env.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
