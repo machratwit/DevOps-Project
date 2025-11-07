@@ -6,6 +6,8 @@ permissions:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
+    outputs:
+      instance_ip: ${{ steps.get_ip.outputs.instance_ip }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -28,5 +30,6 @@ jobs:
         working-directory: infrastructure
         run: terraform apply -auto-approve
       - name: Get EC2 public IP
+        id: get_ip
         run: |
           echo "instance_ip=$(terraform -chdir=infrastructure output -raw instance_public_ip | tr -d '\n')" >> $GITHUB_OUTPUT
