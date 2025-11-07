@@ -64,28 +64,19 @@ jobs:
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           docker push ${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Install GitHub CLI
-        run: sudo apt update && sudo apt install gh -y
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
 
-      - name: Get latest terraform-apply run ID
-        id: get_run
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+      - name: Get EC2 public IP from Terraform state
+        id: get_ip
         run: |
-          RUN_ID=$(gh run list --workflow terraform-apply.yml --branch main --limit 1 --json databaseId --jq '.[0].databaseId')
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-
-      - name: Download EC2 IP artifact
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          gh run download $RUN_ID --name ec2-ip --dir ./artifacts
-
-      - name: Read EC2 IP
-        run: |
-          EC2_IP=$(cat ./artifacts/ec2_ip.txt)
-          echo "EC2_IP=$EC2_IP"
+          cd infrastructure
+          terraform init -input=false
+          EC2_IP=$(terraform output -raw instance_public_ip)
           echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
+          echo "EC2 IP: $EC2_IP"
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.7
