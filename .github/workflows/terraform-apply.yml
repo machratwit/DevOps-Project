@@ -31,6 +31,9 @@ jobs:
         id: get_ip
         run: |
           terraform -chdir=infrastructure output -raw instance_public_ip 2>/dev/null | tr -d '\n' > ec2_ip.txt
+      - name: Debug IP
+        run: |
+          echo "EC2 IP is: $(cat ec2_ip.txt)"
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
