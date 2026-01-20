@@ -1,4 +1,4 @@
-# DevOps Project: End-to-End CI/CD with Terraform, Docker, AWS, and GitHub Actions
+# DevOps Project: CI/CD Pipeline with Terraform, Docker, AWS, and GitHub Actions
 
 **Overview**
 
