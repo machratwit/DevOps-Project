@@ -34,7 +34,7 @@ Terraform state is stored remotely to enable safe, repeatable deployments:
 
 - Consistent state key per environment
 
-<img width="1609" height="394" alt="image" src="https://github.com/user-attachments/assets/e5fcefa7-e7df-4f81-a59f-68b8686aba3e" />
+<img width="957" height="307" alt="image" src="https://github.com/user-attachments/assets/9075bcef-d1da-4eac-8acc-25df416f025e" />
 
 <img width="1436" height="98" alt="image" src="https://github.com/user-attachments/assets/b4fd3517-6500-454e-8e46-a7356373d4a1" />
 
