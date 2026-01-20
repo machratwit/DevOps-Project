@@ -16,7 +16,7 @@ Terraform is used to provision and manage all AWS infrastructure.
 
 - AWS provider locked to a specific version
 
- - Amazon ECR repository for Docker images
+- Amazon ECR repository for Docker images
 
 - EC2 security group allowing HTTP (3000) and SSH (22)
 
@@ -33,6 +33,15 @@ Terraform state is stored remotely to enable safe, repeatable deployments:
 - Encrypted state
 
 - Consistent state key per environment
+
+<img width="1609" height="394" alt="image" src="https://github.com/user-attachments/assets/e5fcefa7-e7df-4f81-a59f-68b8686aba3e" />
+
+<img width="1436" height="98" alt="image" src="https://github.com/user-attachments/assets/b4fd3517-6500-454e-8e46-a7356373d4a1" />
+
+<img width="1015" height="367" alt="image" src="https://github.com/user-attachments/assets/a9a65fc1-d2fd-4458-895f-f5cb46291ae1" />
+
+<img width="858" height="882" alt="image" src="https://github.com/user-attachments/assets/87fa5b9c-27d1-4c60-9b6d-16b8354f4921" />
+
 
 
 
@@ -56,6 +65,7 @@ The EC2 instance is fully configured at launch using a Bash user data script.
 
 This ensures the instance is deployment-ready without manual SSH configuration.
 
+<img width="779" height="730" alt="image" src="https://github.com/user-attachments/assets/a359f7b3-4fdb-4948-8d33-bee4e1bdcfdb" />
 
 ## Application Layer
 
@@ -84,6 +94,10 @@ The application is packaged into a Docker image using a custom Dockerfile.
 
 The Docker image is tagged and pushed to Amazon ECR during the pipeline run.
 
+<img width="1543" height="279" alt="image" src="https://github.com/user-attachments/assets/474f8294-58db-47dd-82ca-eb8efa8ceb33" />
+
+<img width="861" height="730" alt="image" src="https://github.com/user-attachments/assets/b73dd41f-6bcc-4389-9ead-d7ffde795af4" />
+
 
 ## CI/CD Pipeline with GitHub Actions
 
@@ -106,6 +120,14 @@ The CI/CD pipeline is defined in `.github/workflows/cicd.yml` and can be manuall
 - Deploys to EC2 over SSH and runs the container
 
 This pipeline eliminates hardcoded credentials and manual deployment steps.
+
+<img width="808" height="288" alt="image" src="https://github.com/user-attachments/assets/d6a1a546-9c99-4507-8aa8-33cb8b9e2e83" />
+
+<img width="914" height="600" alt="image" src="https://github.com/user-attachments/assets/1d733781-ba8e-433d-82c1-65459612adcf" />
+
+<img width="573" height="486" alt="image" src="https://github.com/user-attachments/assets/c6db0ae8-f705-4e03-878d-57cbd0eb86b1" />
+
+<img width="627" height="700" alt="image" src="https://github.com/user-attachments/assets/47ff77a9-c9c1-4ffc-8c49-9b2b852e4b82" />
 
 
 ## Deployment Process
@@ -133,6 +155,9 @@ Once deployed, the application can be verified by accessing:
 http://<EC2_PUBLIC_IP>:3000/
 http://<EC2_PUBLIC_IP>:3000/health
 ```
+<img width="460" height="149" alt="image" src="https://github.com/user-attachments/assets/7259f71f-c2c9-4e39-bedc-3cd6f5ca75dc" />
+
+<img width="614" height="89" alt="image" src="https://github.com/user-attachments/assets/b82baab7-9bed-4924-8afa-db24f4e342eb" />
 
 ## Security Considerations
 
